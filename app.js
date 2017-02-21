@@ -7,7 +7,8 @@ const clientes = 'https://mockbin.com/bin/b7cf0b01-cc41-4006-a3b7-965c155d2c3b';
 const compras  = 'https://mockbin.com/bin/bccf6706-3ae0-44ea-8b12-fc45ae236b04';
 
 var lista_clientes = [];
-var lista_compras = [];
+var lista_compras  = [];
+var lista_produtos = [];
 
 app.use(express.static(__dirname + '/public'));
 
@@ -30,6 +31,7 @@ app.get('/clientes-ordem-compra', function(req,res){
 
 //# 2 - Mostre o cliente com maior compra única no último ano (2016).
 app.get('/cliente-maior-compra', function(req,res){
+   //refatorar para pegar por parametro
    maiorCompraAno('2016', function(data){
       res.json(data);
       res.end();
@@ -54,6 +56,17 @@ app.get('/cliente-recomendacao', function(req,res){
 module.exports = app;
 
 function recomendaCliente(){
+   var codCliente = "000.000.000.01";
+
+   var lista_compras_cliente = lista_compras.filter(
+      function(elem, i, array){
+         if(elem.cliente == codCliente){return true}
+      }).map(function(obj,index){
+         return obj.itens;
+      });
+
+   console.log(lista_compras_cliente[0]);
+
 
 }
 
@@ -140,7 +153,13 @@ function somaComprasCliente(callback){
    })
 }
 
-
+function verificaObj(arr, procurar) {
+   var chave = procurar[0];
+   var valor = procurar[1];
+   return !!arr.filter(function (el) {
+     return el[chave] == valor;
+    }).length;
+}
 
 function montarListas(){
    console.log('Atualizando listas')
@@ -154,6 +173,13 @@ function montarListas(){
       if (!error && response.statusCode == 200) {
          lista_compras = JSON.parse(body);
       }
+   })
+   lista_compras.map(function(obj,index){
+      obj.itens.map(function(valor){
+         if(verificaObj(lista_produtos, ['produto', valor.produto]) == false){
+            lista_produtos.push(valor);
+         };
+      })
    })
 }
 
