@@ -1,0 +1,20 @@
+{
+  "name": "velasquinho_system",
+  "version": "1.0.0",
+  "description": "Projeto para avaliacao uBots",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha test.js",
+    "start": "node bin/www"
+  },
+  "author": "Gian W.",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.1",
+    "request": "^2.79.0"
+  },
+  "devDependencies": {
+    "mocha": "^3.2.0",
+    "supertest": "^3.0.0"
+  }
+}
