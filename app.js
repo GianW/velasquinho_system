@@ -50,12 +50,16 @@ app.get('/cliente-fiel', function(req,res){
 
 //# 4 - Recomende um vinho para um determinado cliente a partir do histórico
 app.get('/cliente-recomendacao', function(req,res){
-   recomendaCliente();
+   recomendaCliente(function(data){
+      console.log('Incidacao de produto');
+      res.json(data);
+      res.end();
+   });
 });
 
 module.exports = app;
 
-function recomendaCliente(){
+function recomendaCliente(callback){
    var codCliente = "000.000.000.01";
 
    var lista_compras_cliente = [];
@@ -82,36 +86,83 @@ function recomendaCliente(){
    );
    execLista.then(
       function(){
-         // console.log(lista_compras_cliente);
+         lista_produtos.map(
+            function(obj, index){
+               //monta lista com produtos ainda nao comprados pelo cliente
+               if(verificaObj(lista_compras_cliente, ['produto', obj.produto]) == false){
+                  produtos_selecionaveis.push(obj);
+               }
+               if(index == (lista_produtos.length - 1)){
+                  var variedadeRecomendar = verificaItemQtdMaior(lista_variedades, 'variedade');
+                  variedadeRecomendar.then(function(valor){
+                     //verifica se existe algum produto com essa variedade que o cliente ainda nao comprou
+                     if (verificaObj(produtos_selecionaveis, ['variedade', valor.variedade]) == true) {
+                        produtos_selecionaveis.forEach(function(item,index,array){
+                           if(item.variedade == valor.variedade){
+                              //retorna item indicado
+                              console.log('Variedade indicada: ');
+                              callback(item);
+                           }
+                        })
+                     }else{
+                        //verifica categorias
+                        var categoriaRecomendar = verificaItemQtdMaior(lista_categoria, 'categoria');
+                        categoriaRecomendar.then(function(retorno){
+                           if (verificaObj(produtos_selecionaveis, ['categoria', retorno.categoria]) == true) {
+                              produtos_selecionaveis.forEach(function(item,index,array){
+                                 if(item.categoria == retorno.categoria){
+                                    //retorna item indicado
+                                    console.log('Categoria indicada: ');
+                                    callback(item);
+                                 }
+                              })
+                           }
+
+                        });
+                     }
+                  });
+               }
+            }
+         )
       }
    );
+}
 
-   lista_produtos.map(
-      function(obj, index){
-         //monta lista com produtos ainda nao comprados pelo cliente
-         if(verificaObj(lista_compras_cliente, ['produto', obj.produto]) == false){
-            produtos_selecionaveis.push(obj);
+function verificaItemQtdMaior(arr, tipo){
+   return new Promise(function(resolve, reject){
+     var listaRetorno = [];
+
+    //percorre as variedades que o usuario consome para verificar recorrencias
+    arr.forEach(function(item, index, array){
+      if(verificaObj(listaRetorno, [tipo, item]) == false){
+         if (tipo == 'variedade') {
+            listaRetorno.push({ 'variedade' : item, 'qtd': 1})
+         }else{
+            listaRetorno.push({ 'categoria' : item, 'qtd': 1})
          }
-         if(index == (lista_produtos.length - 1)){
-            // console.log(produtos_selecionaveis)
-            console.log(lista_variedades)
-         }
-      })
-
-
-   //percorre as variedades que o usuario consome para verificar recorrencias
-   lista_variedades.forEach(function(item, index, array){
-      if(verificaObj(pontos_variedades, ['variedade', item]) == false){
-         pontos_variedades.push({'variedade': item, 'qtd': 1})
       }else{
-         pontos_variedades.forEach(function(obj, i, a){
-            if(obj.variedade == item){
-               console.log(obj);
+         listaRetorno.forEach(function(obj, i, a){
+            if(obj[tipo] == item){
                obj.qtd += 1;
             }
          });
       }
+      if (index == (arr.length - 1)) {
+
+         var maior = 0;
+         var chave;
+         for(var prop in listaRetorno) {
+            if(listaRetorno[prop].qtd > maior) {
+                maior = listaRetorno[prop].qtd;
+                chave = prop;
+            }
+            if(prop == (listaRetorno.length - 1)){
+               resolve(listaRetorno[chave]);
+            }
+         }
+      }
    });
+   })
 }
 
 function clienteMaisCompras(callback){
