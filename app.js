@@ -49,8 +49,9 @@ app.get('/cliente-fiel', function(req,res){
 
 
 //# 4 - Recomende um vinho para um determinado cliente a partir do histórico
-app.get('/cliente-recomendacao', function(req,res){
-   recomendaCliente(function(data){
+app.get('/cliente-recomendacao/:cliente', function(req,res){
+   var cliente = req.params.cliente;
+   recomendaCliente(cliente, function(data){
       console.log('Incidacao de produto');
       res.json(data);
       res.end();
@@ -59,8 +60,8 @@ app.get('/cliente-recomendacao', function(req,res){
 
 module.exports = app;
 
-function recomendaCliente(callback){
-   var codCliente = "000.000.000.01";
+function recomendaCliente(cliente, callback){
+   var codCliente = cliente;
 
    var lista_compras_cliente = [];
    var produtos_selecionaveis = [];
@@ -100,7 +101,6 @@ function recomendaCliente(callback){
                         produtos_selecionaveis.forEach(function(item,index,array){
                            if(item.variedade == valor.variedade){
                               //retorna item indicado
-                              console.log('Variedade indicada: ');
                               callback(item);
                            }
                         })
@@ -112,7 +112,6 @@ function recomendaCliente(callback){
                               produtos_selecionaveis.forEach(function(item,index,array){
                                  if(item.categoria == retorno.categoria){
                                     //retorna item indicado
-                                    console.log('Categoria indicada: ');
                                     callback(item);
                                  }
                               })
