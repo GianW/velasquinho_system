@@ -58,16 +58,60 @@ module.exports = app;
 function recomendaCliente(){
    var codCliente = "000.000.000.01";
 
-   var lista_compras_cliente = lista_compras.filter(
-      function(elem, i, array){
-         if(elem.cliente == codCliente){return true}
-      }).map(function(obj,index){
-         return obj.itens;
-      });
+   var lista_compras_cliente = [];
+   var produtos_selecionaveis = [];
+   var lista_variedades = [];
+   var lista_categoria = [];
+   var pontos_variedades = [];
 
-   console.log(lista_compras_cliente[0]);
+   var execLista = new Promise(
+      function(resolve, reject) {
+         lista_compras.filter(
+            function(elem, i, array){
+               if(elem.cliente == codCliente){return true}
+            }).map(function(obj,index){
+               obj.itens.map(function(obj){
+                  lista_compras_cliente.push(obj)
+                  //lista de preferencias
+                  lista_variedades.push(obj.variedade);
+                  lista_categoria.push(obj.categoria);
+               }) ;
+            })
+         resolve('');
+      }
+   );
+   execLista.then(
+      function(){
+         // console.log(lista_compras_cliente);
+      }
+   );
+
+   lista_produtos.map(
+      function(obj, index){
+         //monta lista com produtos ainda nao comprados pelo cliente
+         if(verificaObj(lista_compras_cliente, ['produto', obj.produto]) == false){
+            produtos_selecionaveis.push(obj);
+         }
+         if(index == (lista_produtos.length - 1)){
+            // console.log(produtos_selecionaveis)
+            console.log(lista_variedades)
+         }
+      })
 
 
+   //percorre as variedades que o usuario consome para verificar recorrencias
+   lista_variedades.forEach(function(item, index, array){
+      if(verificaObj(pontos_variedades, ['variedade', item]) == false){
+         pontos_variedades.push({'variedade': item, 'qtd': 1})
+      }else{
+         pontos_variedades.forEach(function(obj, i, a){
+            if(obj.variedade == item){
+               console.log(obj);
+               obj.qtd += 1;
+            }
+         });
+      }
+   });
 }
 
 function clienteMaisCompras(callback){
@@ -172,15 +216,16 @@ function montarListas(){
    request(compras, function (error, response, body) {
       if (!error && response.statusCode == 200) {
          lista_compras = JSON.parse(body);
+         lista_compras.map(function(obj,index){
+            obj.itens.map(function(valor){
+               if(verificaObj(lista_produtos, ['produto', valor.produto]) == false){
+                  lista_produtos.push(valor);
+               };
+            })
+         })
       }
    })
-   lista_compras.map(function(obj,index){
-      obj.itens.map(function(valor){
-         if(verificaObj(lista_produtos, ['produto', valor.produto]) == false){
-            lista_produtos.push(valor);
-         };
-      })
-   })
+
 }
 
 montarListas();
