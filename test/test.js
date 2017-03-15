@@ -8,6 +8,16 @@ var cliente_maior = require('./cliente_maior.js');
 var clientes_fieis = require('./clientes_fieis.js');
 var clientes_recomendacao = require('./cliente_recomendacao.js');
 
+require('mocha-jshint')({
+   paths: [
+      './app.js',
+      './dados.js',
+      './functions/',
+      './routes/'
+   ]
+});
+
+
 describe('Request para as APIS', function(){
   it('API clientes', function(done){
       request(app)

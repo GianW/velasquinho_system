@@ -30,7 +30,7 @@ exports.jsonClientesQtdCompras = function (lista_clientes, lista_totais) {
       var element = {};
       var valor = lista_totais[lista_clientes[index].cpf.replace("-", ".")];
 
-      if (valor == undefined) {return;}
+      if (valor === undefined) {return;}
 
       element.nome = lista_clientes[index].nome;
       element.cpf  = lista_clientes[index].cpf;

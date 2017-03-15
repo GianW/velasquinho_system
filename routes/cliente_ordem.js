@@ -1,6 +1,6 @@
 var express = require('express');
 var dados = require('../dados');
-var fn = require('../functions/cliente_ordem.js')
+var fn = require('../functions/cliente_ordem.js');
 
 var router = express.Router();
 
