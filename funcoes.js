@@ -1,9 +1,4 @@
-/*jslint node: true */
-"use strict"
-var funcoes = require('./funcoes');
-
-var dados = require('./dados');
-
+"use strict";
 exports.verificaObj = function (arr, procurar) {
    var chave = procurar[0];
    var valor = procurar[1];
@@ -19,7 +14,7 @@ exports.retornaObjExiste = function (arr, procurar) {
    var valorDois = procurar[3];
 
    return arr.filter(function (el) {
-      if (chaveDois == undefined) {
+      if (chaveDois === undefined) {
          return (el[chave] == valor);
       }else{
          return (el[chave] == valor && el[chaveDois] == valorDois);
@@ -27,10 +22,3 @@ exports.retornaObjExiste = function (arr, procurar) {
     });
 };
 
-exports.teste = function (){
-   funcoes.mensagem();
-};
-
-exports.mensagem = function (){
-   console.log('Oláá')
-}

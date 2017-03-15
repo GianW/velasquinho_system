@@ -1,4 +1,6 @@
-"use strict"
+/*jshint node: true*/
+/*jshint esversion: 6*/
+"use strict";
 var request = require('request');
 var funcoes = require('./funcoes');
 
@@ -10,7 +12,7 @@ var lista_compras  = [];
 var lista_produtos = [];
 
 function montarListas(){
-   var data = new Date;
+   var data = new Date();
    console.log('Atualizando listas: ' + data);
    request(clientes, function (error, response, body) {
       if (!error && response.statusCode == 200) {
@@ -24,26 +26,26 @@ function montarListas(){
 
          lista_compras.map(function(obj,index){
             obj.itens.map(function(desc){
-               if(funcoes.verificaObj(lista_produtos, ['produto', desc.produto]) == false){
+               if(funcoes.verificaObj(lista_produtos, ['produto', desc.produto]) === false){
                   lista_produtos.push(desc);
-               };
-            })
-         })
-      };
+               }
+            });
+         });
+      }
    });
 }
 
 montarListas();
-setInterval(function(){ montarListas() }, 60000);
+setInterval(function(){ montarListas(); }, 60000);
 
 exports.clientes = function(){
    return lista_clientes;
-}
+};
 
 exports.compras = function(){
    return lista_compras;
-}
+};
 
 exports.produtos = function(){
    return lista_produtos;
-}
+};

@@ -4,7 +4,8 @@
   "description": "Projeto para avaliacao uBots",
   "main": "app.js",
   "scripts": {
-    "test": "mocha test.js",
+    "jshint": "./node_modules/.bin/jshint routes/.",
+    "test": "mocha test/test.js",
     "start": "node bin/www"
   },
   "author": "Gian W.",
@@ -14,7 +15,13 @@
     "request": "^2.79.0"
   },
   "devDependencies": {
+    "jshint": "^2.9.4",
     "mocha": "^3.2.0",
     "supertest": "^3.0.0"
+  },
+  "jshintConfig":{
+    "node": true,
+    "mocha": true,
+    "esversion": 6
   }
 }
